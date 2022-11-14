@@ -26,11 +26,11 @@ form.addEventListener("submit", (evento) => {
         itemAtual.id = existe.id  // se ele existe, usa o mesmo id existente
 
         atualizaElemento(itemAtual)
-     
-        
+
+        itens[itens.findIndex(elemento => elemento.id === existe.id)] = itemAtual //escreve o itemAtual por cima do conteúdo existente p atualizar
     }else {
 
-        itemAtual.id = itens.length // cria um id do tamanho que for o array
+        itemAtual.id = itens[itens.length -1] ? (itens[itens.length-1]).id + 1 : 0; // cria um id do tamanho que for o array
 
         criaElemento(itemAtual)   // usa a função passando o objeto onde está nome e quantidade
 
@@ -60,10 +60,34 @@ function criaElemento(item) {
     novoItem.appendChild(numeroItem)         // insere um objeto dentro do outro
     novoItem.innerHTML += item.nome             // acrescenta o nome
 
+    novoItem.appendChild(botaoDeleta(item.id))
+
     lista.appendChild(novoItem)         // finaliza inserindo o novo "item" a lista (um dentro do outro) 
 
 }
 
 function atualizaElemento(item) {
     document.querySelector("[data-id='"+item.id+"']").innerHTML = item.quantidade
+
+}
+
+function botaoDeleta(id) {      // coloca também o id
+    const elementoBotao = document.createElement("button") //cria um elemento botão com um "x"
+    elementoBotao.innerText = "x"
+
+    elementoBotao.addEventListener("click", function() { // no click, chama a função deletaElemento
+        deletaElemento(this.parentNode, id)     // usando o parentNode para remover o parente pai do nó
+    })                                          // também enviando o id.
+
+    return elementoBotao
+}
+
+function deletaElemento(elemento, id) {     // função para deletar um elemento
+    elemento.remove()    
+    
+    itens.splice(itens.findIndex(elemento => elemento.id === id), 1) // splice(o queremos remover, 1 item a partir daquela posição)
+
+    localStorage.setItem("item", JSON.stringify(itens))
+
+   
 }
